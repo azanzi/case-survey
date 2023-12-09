@@ -4,6 +4,7 @@ export type Task = {
 };
 
 export const tasks: Task[] = [
+  // camel
   {
     prompt: "old-location",
     options: ["cold-location", "old-station", "old-location", "old-nation"],
@@ -23,5 +24,57 @@ export const tasks: Task[] = [
   {
     prompt: "deep-thought",
     options: ["sleet-thought", "deep-thought", "keep-thought", "deep-fought"],
+  },
+  // kebab
+  {
+    prompt: "minValue",
+    options: ["newValue", "maxValue", "ondValue", "minValue"],
+  },
+  {
+    prompt: "lookAround",
+    options: ["seeAround", "lookUp", "seeDown", "lookAround"],
+  },
+  {
+    prompt: "maxIterator",
+    options: ["minIterator", "maxIterator", "oldIterator", "newIterator"],
+  },
+  {
+    prompt: "selectedItems",
+    options: [
+      "selectedInfo",
+      "chosenItems",
+      "selectedItems",
+      "selectedObjects",
+    ],
+  },
+  {
+    prompt: "setDirection",
+    options: [
+      "changeDirection",
+      "sitDirection",
+      "setDirection",
+      "oneDirection",
+    ],
+  },
+  // no-sep
+  {
+    prompt: "chooseitem",
+    options: ["choseitem", "gooseitem", "chooseitem", "choosefighter"],
+  },
+  {
+    prompt: "removeelement",
+    options: ["moveelement", "removeobject", "removeelement", "addelement"],
+  },
+  {
+    prompt: "myaccount",
+    options: ["mymouse", "myaccount", "thisaccount", "nyaccount"],
+  },
+  {
+    prompt: "updatefile",
+    options: ["updatetile", "updatefile", "updatepile", "updatemile"],
+  },
+  {
+    prompt: "exploreworld",
+    options: ["exploreword", "explorerword", "exploreword", "exploresky"],
   },
 ];

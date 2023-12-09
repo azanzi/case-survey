@@ -36,7 +36,7 @@ export default function SurveyPage() {
     setStart(false);
 
     try {
-      const { status } = await axios.post(`/api/survey?flow=${flow}`, {
+      await axios.post(`/api/survey?flow=${flow}`, {
         answer: id,
         time,
       });

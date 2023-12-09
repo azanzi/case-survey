@@ -29,7 +29,7 @@ enum Occupation {
 }
 
 enum Usage {
-  Low = "work",
+  Low = "low",
   Medium = "medium",
   High = "high",
   VeryHigh = "very-uhigh",
