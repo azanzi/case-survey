@@ -1,6 +1,4 @@
 import GetToKnowForm from "@/components/ui/GetToKnowForm";
-import { Button } from "@/components/ui/button";
-import { Form } from "@/components/ui/form";
 import React from "react";
 
 type Props = {};
@@ -14,9 +12,10 @@ const DegmoPage = (props: Props) => {
 
       <div className="h-full flex flex-col items-center justify-center">
         <div className="flex flex-col justify-center w-1/2">
-          <h3 className="font-bold text-2xl mb-2">
+          <h3 className="font-bold text-2xl">
             Let's get to know each other :)
           </h3>
+          <p className="border-b text-sm font-light pb-2 mb-4">This information is only used for statistical analysis</p>
           <GetToKnowForm />
         </div>
       </div>

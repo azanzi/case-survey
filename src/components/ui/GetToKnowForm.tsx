@@ -1,21 +1,12 @@
 "use client";
 
-import React from "react";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "./form";
+import React, { useEffect } from "react";
+import { Form, FormControl, FormField, FormItem, FormMessage } from "./form";
 import z from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Input } from "./input";
 import { Button } from "./button";
-import { RadioGroup, RadioGroupItem } from "./radio-group";
-import { Label } from "./label";
 import {
   Select,
   SelectContent,
@@ -23,132 +14,118 @@ import {
   SelectTrigger,
   SelectValue,
 } from "./select";
+import { fieldsOfStudy, fieldsOfWork } from "@/lib/options";
+import axios from "axios";
+import { useRouter } from "next/navigation";
 
-const formSchema = z.object({
-  name: z.string().min(2).max(50),
-  sex: z.string().min(2).max(50),
-  age: z.number().min(13).max(99),
-  occupation: z.string().min(2).max(50),
-  field: z.string().min(2).max(50),
-  education: z.string().min(2).max(50),
-});
-
-interface Field {
-  id: string;
-  name: string;
+enum Sex {
+  Male = "male",
+  Female = "female",
 }
 
-const fieldsOfStudy: Field[] = [
-  { id: "s-cs", name: "Computer Science" },
-  { id: "s-eng", name: "Engineering (Mechanical, Electrical, Civil...)" },
-  { id: "s-bus", name: "Business Administration" },
-  { id: "s-psy", name: "Psychology" },
-  { id: "s-bio", name: "Biology" },
-  { id: "s-chm", name: "Chemistry" },
-  { id: "s-phy", name: "Physics" },
-  { id: "s-mat", name: "Mathematics" },
-  { id: "s-eco", name: "Economics" },
-  { id: "s-soc", name: "Sociology" },
-  { id: "s-pol", name: "Political Sciences" },
-  { id: "s-lit", name: "Literature" },
-  { id: "s-hst", name: "History" },
-  { id: "s-med", name: "Medicine" },
-  { id: "s-edu", name: "Education" },
-  { id: "s-oth", name: "Other :/" },
-];
+enum Occupation {
+  Student = "study",
+  Worker = "work",
+}
 
-const fieldsOfWork: Field[] = [
-  { id: "w-it", name: "Information Technology" },
-  { id: "w-fin", name: "Finance" },
-  { id: "w-mkt", name: "Marketing" },
-  { id: "w-hlt", name: "Healthcare" },
-  { id: "w-edu", name: "Education" },
-  { id: "w-res", name: "Research" },
-  { id: "w-art", name: "Arts & Design" },
-  { id: "w-soc", name: "Social Services" },
-  { id: "w-mgm", name: "Management" },
-  { id: "w-law", name: "Law" },
-  { id: "w-com", name: "Communication" },
-  { id: "w-tor", name: "Hospitality & Tourism" },
-  { id: "w-edu", name: "Education" },
-  { id: "w-oth", name: "Other :/" },
-];
+enum Usage {
+  Low = "work",
+  Medium = "medium",
+  High = "high",
+  VeryHigh = "very-uhigh",
+}
+
+enum UseAtWork {
+  Yes = "true",
+  No = "false",
+}
+
+const formSchema = z.object({
+  sex: z.nativeEnum(Sex),
+  age: z.string().refine((val) => !Number.isNaN(parseInt(val, 10)), {
+    message: "Must be a number",
+  }),
+  occupation: z.nativeEnum(Occupation),
+  field: z.string().min(2).max(50),
+  education: z.string().min(2).max(50),
+  usage: z.nativeEnum(Usage),
+  workplace: z.nativeEnum(UseAtWork),
+});
 
 export default function GetToKnowForm() {
+  const router = useRouter();
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      name: "",
-      sex: "male",
-      age: 18,
-      occupation: "study",
+      sex: Sex.Male,
+      age: "18",
+      occupation: Occupation.Student,
       field: "",
       education: "",
+      usage: Usage.Low,
+      workplace: UseAtWork.Yes,
     },
   });
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
-    console.log(values);
+    try {
+      const { data } = await axios.post("/api/flow", values);
+      router.push(`/survey?flow=${data.flow}`);
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-        <FormField
-          control={form.control}
-          name="name"
-          render={({ field }) => (
-            <FormItem>
-              <FormControl>
-                <div className="flex items-center space-x-2">
-                  <span className="whitespace-pre">I go by the name</span>
-                  <Input className="w-56" placeholder="John Doe" {...field} />
-                </div>
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="sex"
-          render={({ field }) => (
-            <FormItem>
-              <FormControl>
-                <RadioGroup>
+        <div className="flex space-x-2">
+          <FormField
+            control={form.control}
+            name="age"
+            render={({ field }) => (
+              <FormItem>
+                <FormControl>
                   <div className="flex items-center space-x-2">
-                    <span>My sex is</span>
-                    <div className="flex items-center space-x-2">
-                      <RadioGroupItem value="male" id="male" />
-                      <Label htmlFor="male">Male</Label>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <RadioGroupItem value="female" id="female" />
-                      <Label htmlFor="female">Female</Label>
-                    </div>
+                    <span className="whitespace-pre">I am a</span>
+                    <Input className="w-20" {...field} />
+                    <span className="whitespace-pre">year old</span>
                   </div>
-                </RadioGroup>
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="age"
-          render={({ field }) => (
-            <FormItem>
-              <FormControl>
-                <div className="flex items-center space-x-2">
-                  <span className="whitespace-pre">I am</span>
-                  <Input type="number" className="w-20" />
-                  <span className="whitespace-pre">years old</span>
-                </div>
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="sex"
+            render={({ field }) => (
+              <FormItem>
+                <FormControl>
+                  <div className="flex items-center space-x-2">
+                    <Select
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                    >
+                      <FormControl>
+                        <SelectTrigger className="w-24 min-w-fit">
+                          <SelectValue placeholder="sex" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectItem value={Sex.Male}>male</SelectItem>
+                        <SelectItem value={Sex.Female}>female</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <span>.</span>
+                  </div>
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </div>
+
         <div className="flex space-x-2">
           <FormField
             control={form.control}
@@ -157,19 +134,23 @@ export default function GetToKnowForm() {
               <FormItem>
                 <FormControl>
                   <div className="flex items-center space-x-2">
-                    <span className="whitespace-pre">I</span>
+                    <span className="whitespace-pre">At the moment I am</span>
                     <Select
                       onValueChange={field.onChange}
                       defaultValue={field.value}
                     >
                       <FormControl>
-                        <SelectTrigger className="w-24">
+                        <SelectTrigger className="w-fit min-w-28">
                           <SelectValue placeholder="occupation" />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        <SelectItem value="student">study</SelectItem>
-                        <SelectItem value="worker">work</SelectItem>
+                        <SelectItem value={Occupation.Student}>
+                          studying
+                        </SelectItem>
+                        <SelectItem value={Occupation.Worker}>
+                          working
+                        </SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
@@ -191,24 +172,25 @@ export default function GetToKnowForm() {
                       defaultValue={field.value}
                     >
                       <FormControl>
-                        <SelectTrigger className="w-48">
-                          <SelectValue placeholder="field" />
+                        <SelectTrigger className="w-fit min-w-[140px]">
+                          <SelectValue placeholder="Select a field" />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
                         {form.getValues().occupation === "study"
                           ? fieldsOfStudy.map((field) => (
-                              <SelectItem value={field.id}>
+                              <SelectItem key={field.id} value={field.id}>
                                 {field.name}
                               </SelectItem>
                             ))
                           : fieldsOfWork.map((field) => (
-                              <SelectItem value={field.id}>
+                              <SelectItem key={field.id} value={field.id}>
                                 {field.name}
                               </SelectItem>
                             ))}
                       </SelectContent>
                     </Select>
+                    <span>.</span>
                   </div>
                 </FormControl>
                 <FormMessage />
@@ -225,14 +207,14 @@ export default function GetToKnowForm() {
               <FormControl>
                 <div className="flex items-center space-x-2">
                   <span className="whitespace-pre">
-                    My highest degree of education is
+                    My highest degree of education is a
                   </span>
                   <Select
                     onValueChange={field.onChange}
                     defaultValue={field.value}
                   >
                     <FormControl>
-                      <SelectTrigger className="w-48">
+                      <SelectTrigger className="w-fit min-w-[150px]">
                         <SelectValue placeholder="Select an education" />
                       </SelectTrigger>
                     </FormControl>
@@ -247,6 +229,7 @@ export default function GetToKnowForm() {
                       <SelectItem value="phd">Doctorate</SelectItem>
                     </SelectContent>
                   </Select>
+                  <span>.</span>
                 </div>
               </FormControl>
               <FormMessage />
@@ -254,7 +237,78 @@ export default function GetToKnowForm() {
           )}
         />
 
-        <Button type="submit">Iniziamo!</Button>
+        <div className="flex space-x-2">
+          <FormField
+            control={form.control}
+            name="usage"
+            render={({ field }) => (
+              <FormItem>
+                <FormControl>
+                  <div className="flex items-center space-x-2">
+                    <span className="whitespace-pre">
+                      Throughout the day I use electronic devices
+                    </span>
+                    <Select
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                    >
+                      <FormControl>
+                        <SelectTrigger className="w-28 min-w-fit">
+                          <SelectValue placeholder="occupation" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectItem value={Usage.Low}>&lt;1 hour</SelectItem>
+                        <SelectItem value={Usage.Medium}>
+                          1 - 3 hours
+                        </SelectItem>
+                        <SelectItem value={Usage.High}>3 - 5 hours</SelectItem>
+                        <SelectItem value={Usage.VeryHigh}>
+                          5&gt; hours
+                        </SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <span>,</span>
+                  </div>
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="workplace"
+            render={({ field }) => (
+              <FormItem>
+                <FormControl>
+                  <div className="flex items-center space-x-2">
+                    <span className="whitespace-pre">I also</span>
+                    <Select
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                    >
+                      <FormControl>
+                        <SelectTrigger className="w-fit min-w-[120px]">
+                          <SelectValue placeholder="Select a field" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectItem value={UseAtWork.Yes}>use</SelectItem>
+                        <SelectItem value={UseAtWork.No}>don't use</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <span>them at my workplace.</span>
+                  </div>
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </div>
+
+        <div className="flex justify-center mt-4">
+          <Button type="submit">Let's get started!</Button>
+        </div>
       </form>
     </Form>
   );
