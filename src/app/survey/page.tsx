@@ -25,6 +25,21 @@ export default function SurveyPage() {
     autoStart: false,
   });
 
+  const getTask = async () => {
+    try {
+      const { data, status } = await axios.get(`/api/survey?flow=${flow}`);
+      if (status === 204) {
+        return router.push("/finished");
+      }
+      setTask(data.task);
+      let nextTS = new Date();
+      nextTS.setSeconds(nextTS.getSeconds() + 3);
+      countdown.restart(nextTS, true);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   // initial fetch
   useEffect(() => {
     getTask();
@@ -48,21 +63,6 @@ export default function SurveyPage() {
   if (!flow) {
     return router.push("/");
   }
-
-  const getTask = async () => {
-    try {
-      const { data, status } = await axios.get(`/api/survey?flow=${flow}`);
-      if (status === 204) {
-        return router.push("/finished");
-      }
-      setTask(data.task);
-      let nextTS = new Date();
-      nextTS.setSeconds(nextTS.getSeconds() + 3);
-      countdown.restart(nextTS, true);
-    } catch (error) {
-      console.log(error);
-    }
-  };
 
   const recordTask = async (id: string) => {
     setStart(false);
