@@ -17,7 +17,12 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={cn(inter.className, "h-screen")}>{children}</body>
+      <body className={cn(inter.className, "h-screen flex flex-col")}>
+        <main className="grow">{children}</main>
+        <div className="h-12 flex items-center justify-center">
+          Made with ❤️ by FP and AZ.
+        </div>
+      </body>
     </html>
   );
 }

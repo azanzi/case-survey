@@ -1,22 +1,23 @@
 "use client";
 
-import React, { useEffect } from "react";
-import { Form, FormControl, FormField, FormItem, FormMessage } from "./form";
+import React, { useEffect, useState } from "react";
+import { Form, FormControl, FormField, FormItem, FormMessage } from "./ui/form";
 import z from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Input } from "./input";
-import { Button } from "./button";
+import { Input } from "./ui/input";
+import { Button } from "./ui/button";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "./select";
+} from "./ui/select";
 import { fieldsOfStudy, fieldsOfWork } from "@/lib/options";
 import axios from "axios";
 import { useRouter } from "next/navigation";
+import { Loader2, Play } from "lucide-react";
 
 enum Sex {
   Male = "male",
@@ -41,15 +42,15 @@ enum UseAtWork {
 }
 
 const formSchema = z.object({
-  sex: z.nativeEnum(Sex),
+  sex: z.nativeEnum(Sex, { required_error: "Mandatory" }),
   age: z.string().refine((val) => !Number.isNaN(parseInt(val, 10)), {
     message: "Must be a number",
   }),
-  occupation: z.nativeEnum(Occupation),
-  field: z.string().min(2).max(50),
-  education: z.string().min(2).max(50),
-  usage: z.nativeEnum(Usage),
-  workplace: z.nativeEnum(UseAtWork),
+  occupation: z.nativeEnum(Occupation, { required_error: "Mandatory" }),
+  field: z.string().min(1, { message: "Mandatory" }),
+  education: z.string().min(1, { message: "Mandatory" }),
+  usage: z.nativeEnum(Usage, { required_error: "Mandatory" }),
+  workplace: z.nativeEnum(UseAtWork, { required_error: "Mandatory" }),
 });
 
 export default function GetToKnowForm() {
@@ -58,7 +59,7 @@ export default function GetToKnowForm() {
     resolver: zodResolver(formSchema),
     defaultValues: {
       sex: Sex.Male,
-      age: "18",
+      age: "21",
       occupation: Occupation.Student,
       field: "",
       education: "",
@@ -66,19 +67,23 @@ export default function GetToKnowForm() {
       workplace: UseAtWork.Yes,
     },
   });
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
+    setIsLoading(true);
     try {
       const { data } = await axios.post("/api/flow", values);
       router.push(`/survey?flow=${data.flow}`);
     } catch (error) {
       console.log(error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-2 lg:space-y-4">
         <div className="flex space-x-2">
           <FormField
             control={form.control}
@@ -87,9 +92,14 @@ export default function GetToKnowForm() {
               <FormItem>
                 <FormControl>
                   <div className="flex items-center space-x-2">
-                    <span className="whitespace-pre">I am a</span>
+                    <span className="whitespace-pre hidden lg:block">
+                      I am a
+                    </span>
+                    <span className="whitespace-pre lg:hidden">Age:</span>
                     <Input className="w-20" {...field} />
-                    <span className="whitespace-pre">year old</span>
+                    <span className="whitespace-pre hidden lg:block">
+                      year old
+                    </span>
                   </div>
                 </FormControl>
                 <FormMessage />
@@ -103,6 +113,7 @@ export default function GetToKnowForm() {
               <FormItem>
                 <FormControl>
                   <div className="flex items-center space-x-2">
+                    <span className="whitespace-pre lg:hidden">Sex:</span>
                     <Select
                       onValueChange={field.onChange}
                       defaultValue={field.value}
@@ -117,7 +128,7 @@ export default function GetToKnowForm() {
                         <SelectItem value={Sex.Female}>female</SelectItem>
                       </SelectContent>
                     </Select>
-                    <span>.</span>
+                    <span className="whitespace-pre hidden lg:block">.</span>
                   </div>
                 </FormControl>
                 <FormMessage />
@@ -126,7 +137,7 @@ export default function GetToKnowForm() {
           />
         </div>
 
-        <div className="flex space-x-2">
+        <div className="flex flex-wrap gap-2">
           <FormField
             control={form.control}
             name="occupation"
@@ -134,7 +145,13 @@ export default function GetToKnowForm() {
               <FormItem>
                 <FormControl>
                   <div className="flex items-center space-x-2">
-                    <span className="whitespace-pre">At the moment I am</span>
+                    <span className="whitespace-pre hidden lg:block">
+                      At the moment I am
+                    </span>
+                    <span className="whitespace-pre lg:hidden">
+                      Occupation:
+                    </span>
+
                     <Select
                       onValueChange={field.onChange}
                       defaultValue={field.value}
@@ -166,7 +183,11 @@ export default function GetToKnowForm() {
               <FormItem>
                 <FormControl>
                   <div className="flex items-center space-x-2">
-                    <span className="whitespace-pre">in the field of</span>
+                    <span className="whitespace-pre hidden lg:block">
+                      in the field of
+                    </span>
+                    <span className="whitespace-pre lg:hidden">Field:</span>
+
                     <Select
                       onValueChange={field.onChange}
                       defaultValue={field.value}
@@ -190,7 +211,7 @@ export default function GetToKnowForm() {
                             ))}
                       </SelectContent>
                     </Select>
-                    <span>.</span>
+                    <span className="whitespace-pre hidden lg:block">.</span>
                   </div>
                 </FormControl>
                 <FormMessage />
@@ -206,9 +227,10 @@ export default function GetToKnowForm() {
             <FormItem>
               <FormControl>
                 <div className="flex items-center space-x-2">
-                  <span className="whitespace-pre">
+                  <span className="whitespace-pre hidden lg:block">
                     My highest degree of education is a
                   </span>
+                  <span className="whitespace-pre lg:hidden">Education:</span>
                   <Select
                     onValueChange={field.onChange}
                     defaultValue={field.value}
@@ -229,7 +251,7 @@ export default function GetToKnowForm() {
                       <SelectItem value="phd">Doctorate</SelectItem>
                     </SelectContent>
                   </Select>
-                  <span>.</span>
+                  <span className="whitespace-pre hidden lg:block">.</span>
                 </div>
               </FormControl>
               <FormMessage />
@@ -237,7 +259,7 @@ export default function GetToKnowForm() {
           )}
         />
 
-        <div className="flex space-x-2">
+        <div className="flex flex-wrap gap-2">
           <FormField
             control={form.control}
             name="usage"
@@ -245,8 +267,11 @@ export default function GetToKnowForm() {
               <FormItem>
                 <FormControl>
                   <div className="flex items-center space-x-2">
-                    <span className="whitespace-pre">
+                    <span className="whitespace-pre hidden lg:block">
                       Throughout the day I use electronic devices
+                    </span>
+                    <span className="whitespace-pre lg:hidden">
+                      Daily electronics usage:
                     </span>
                     <Select
                       onValueChange={field.onChange}
@@ -258,17 +283,17 @@ export default function GetToKnowForm() {
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        <SelectItem value={Usage.Low}>&lt;1 hour</SelectItem>
+                        <SelectItem value={Usage.Low}>&lt; 1 hour</SelectItem>
                         <SelectItem value={Usage.Medium}>
                           1 - 3 hours
                         </SelectItem>
                         <SelectItem value={Usage.High}>3 - 5 hours</SelectItem>
                         <SelectItem value={Usage.VeryHigh}>
-                          5&gt; hours
+                          &gt; 5 hours
                         </SelectItem>
                       </SelectContent>
                     </Select>
-                    <span>,</span>
+                    <span className="whitespace-pre hidden lg:block">,</span>
                   </div>
                 </FormControl>
                 <FormMessage />
@@ -282,7 +307,10 @@ export default function GetToKnowForm() {
               <FormItem>
                 <FormControl>
                   <div className="flex items-center space-x-2">
-                    <span className="whitespace-pre">I also</span>
+                    <span className="whitespace-pre hidden lg:block">
+                      I also
+                    </span>
+                    <span className="whitespace-pre lg:hidden">Electronics usage at work</span>
                     <Select
                       onValueChange={field.onChange}
                       defaultValue={field.value}
@@ -297,7 +325,9 @@ export default function GetToKnowForm() {
                         <SelectItem value={UseAtWork.No}>don't use</SelectItem>
                       </SelectContent>
                     </Select>
-                    <span>them at my workplace.</span>
+                    <span className="whitespace-pre hidden lg:block">
+                      them at my workplace.
+                    </span>
                   </div>
                 </FormControl>
                 <FormMessage />
@@ -306,8 +336,11 @@ export default function GetToKnowForm() {
           />
         </div>
 
-        <div className="flex justify-center mt-4">
-          <Button type="submit">Let's get started!</Button>
+        <div className="flex justify-center mt-4 border-t p-4">
+          <Button type="submit" disabled={isLoading}>
+            {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+            Let's get started! <Play className="ml-2 h-4 w-4" />
+          </Button>
         </div>
       </form>
     </Form>
