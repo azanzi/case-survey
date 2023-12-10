@@ -1,6 +1,7 @@
 -- CreateTable
 CREATE TABLE "User" (
     "id" TEXT NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "sex" TEXT NOT NULL,
     "age" INTEGER NOT NULL,
     "occupation" TEXT,
@@ -9,6 +10,7 @@ CREATE TABLE "User" (
     "usage" TEXT NOT NULL,
     "workplace" TEXT NOT NULL,
     "step" INTEGER NOT NULL DEFAULT 0,
+    "done" BOOLEAN NOT NULL DEFAULT false,
 
     CONSTRAINT "User_pkey" PRIMARY KEY ("id")
 );
