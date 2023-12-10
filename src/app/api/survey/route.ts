@@ -1,6 +1,7 @@
 import { tasks } from "@/lib/tasks";
 import { PrismaClient } from "@prisma/client";
 import { NextRequest } from "next/server";
+import lodash from "lodash";
 
 const prisma = new PrismaClient();
 
@@ -35,9 +36,10 @@ export async function GET(req: NextRequest) {
   }
 
   const task = tasks[user.step];
+  const options = lodash.shuffle(task.options);
 
   return Response.json(
-    { task: { prompt: task.prompt, options: task.options } },
+    { task: { prompt: task.prompt, options } },
     { status: 200 }
   );
 }

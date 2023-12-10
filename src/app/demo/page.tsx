@@ -7,7 +7,7 @@ const DegmoPage = (props: Props) => {
   return (
     <div className="h-full flex flex-col">
       <div className="flex justify-center">
-        <h1 className="text-4xl font-bold py-4">Case Survey</h1>
+        <h1 className="text-4xl font-bold py-4">case-survey</h1>
       </div>
 
       <div className="h-full flex flex-col items-center justify-center">
@@ -15,7 +15,10 @@ const DegmoPage = (props: Props) => {
           <h3 className="font-bold text-2xl">
             Let's get to know each other :)
           </h3>
-          <p className="border-b text-sm font-light pb-2 mb-4">This information is exclusively used for statistical analysis, no other kind of information is taken.</p>
+          <p className="border-b text-sm font-light pb-2 mb-4">
+            This information is exclusively used for statistical analysis, no
+            other kind of information is taken.
+          </p>
           <GetToKnowForm />
         </div>
       </div>
