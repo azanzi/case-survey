@@ -1,7 +1,6 @@
 "use client";
 
 import OptionKeyboard from "@/components/OptionKeyboard";
-import { Skeleton } from "@/components/ui/skeleton";
 import { type Task } from "@/lib/tasks";
 import axios from "axios";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -25,6 +24,25 @@ export default function SurveyPage() {
     onExpire: () => startTask(),
     autoStart: false,
   });
+
+  // initial fetch
+  useEffect(() => {
+    getTask();
+  }, []);
+
+  // timer logic
+  useEffect(() => {
+    let interval: ReturnType<typeof setTimeout> | undefined = undefined;
+    if (start) {
+      interval = setInterval(() => {
+        setTime((prev) => prev + 10);
+      }, 10);
+    } else {
+      clearInterval(interval);
+    }
+
+    return () => clearInterval(interval);
+  }, [start]);
 
   const flow = searchParams.get("flow");
   if (!flow) {
@@ -65,25 +83,6 @@ export default function SurveyPage() {
     setStart(true);
     setShowOptions(true);
   };
-
-  // initial fetch
-  useEffect(() => {
-    getTask();
-  }, []);
-
-  // timer logic
-  useEffect(() => {
-    let interval: ReturnType<typeof setTimeout> | undefined = undefined;
-    if (start) {
-      interval = setInterval(() => {
-        setTime((prev) => prev + 10);
-      }, 10);
-    } else {
-      clearInterval(interval);
-    }
-
-    return () => clearInterval(interval);
-  }, [start]);
 
   return (
     <div className="h-full flex flex-col">

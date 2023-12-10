@@ -245,9 +245,9 @@ export default function GetToKnowForm() {
                         High School Diploma
                       </SelectItem>
                       <SelectItem value="bachelor">
-                        Bachelor's Degree
+                        Bachelor&apos;s Degree
                       </SelectItem>
-                      <SelectItem value="master">Master's Degree</SelectItem>
+                      <SelectItem value="master">Master&apos;s Degree</SelectItem>
                       <SelectItem value="phd">Doctorate</SelectItem>
                     </SelectContent>
                   </Select>
@@ -322,7 +322,7 @@ export default function GetToKnowForm() {
                       </FormControl>
                       <SelectContent>
                         <SelectItem value={UseAtWork.Yes}>use</SelectItem>
-                        <SelectItem value={UseAtWork.No}>don't use</SelectItem>
+                        <SelectItem value={UseAtWork.No}>don&apos;t use</SelectItem>
                       </SelectContent>
                     </Select>
                     <span className="whitespace-pre hidden lg:block">
@@ -339,7 +339,7 @@ export default function GetToKnowForm() {
         <div className="flex justify-center mt-4 border-t p-4">
           <Button type="submit" disabled={isLoading}>
             {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-            Let's get started! <Play className="ml-2 h-4 w-4" />
+            Let&apos;s get started! <Play className="ml-2 h-4 w-4" />
           </Button>
         </div>
       </form>
