@@ -31,7 +31,7 @@ export default function OptionCard({
       {isLoading ? (
         <Skeleton className="w-[300px] lg:w-[450px] h-12 bg-slate-300 rounded-full" />
       ) : (
-        <h4 className="text-4xl">{value}</h4>
+        <h4 className="text-3xl md:text-4xl">{value}</h4>
       )}
     </div>
   );

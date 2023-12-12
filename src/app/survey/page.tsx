@@ -93,7 +93,7 @@ export default function SurveyPage() {
     <div className="h-full flex flex-col">
       <div className="flex flex-col items-center justify-center h-52 border-b border-slate-300 bg-slate-200">
         <p className="font-light text-lg">Click on the option you see</p>
-        <h2 className="text-5xl font-bold">{task?.prompt || ""}</h2>
+        <h2 className="text-4xl md:text-5xl font-bold text-center">{task?.prompt || ""}</h2>
         <span className="text-light mt-2">{progress}</span>
       </div>
       <OptionKeyboard
