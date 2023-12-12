@@ -4,7 +4,7 @@ import { v4 as uuidv4 } from "uuid";
 const prisma = new PrismaClient();
 
 export async function POST(req: Request) {
-  const { age, sex, usage, workplace, education, field, occupation } =
+  const { age, sex, experience, codeAtHome, education, field, occupation } =
     await req.json();
 
   const flow = uuidv4();
@@ -14,8 +14,8 @@ export async function POST(req: Request) {
       id: flow,
       age: parseInt(age),
       sex,
-      usage,
-      workplace,
+      experience,
+      codeAtHome,
       education,
       field,
       occupation,

@@ -21,7 +21,7 @@ export async function GET(req: NextRequest) {
     return Response.json({ message: "Invalid Flow" }, { status: 404 });
   }
 
-  if (user.step >= tasks.length) {
+  if (user.steps.length <= 0) {
     if (!user.done) {
       await prisma.user.update({
         data: {
@@ -35,11 +35,15 @@ export async function GET(req: NextRequest) {
     return new Response(null, { status: 204 });
   }
 
-  const task = tasks[user.step];
+  const tasksLeft = user.steps;
+  const random = Math.floor(Math.random() * tasksLeft.length);
+  const el = tasksLeft.splice(random, 1)[0];
+
+  const task = tasks[el];
   const options = lodash.shuffle(task.options);
 
   return Response.json(
-    { task: { prompt: task.prompt, options } },
+    { task: { id: el, prompt: task.prompt, options } },
     { status: 200 }
   );
 }
@@ -50,7 +54,7 @@ export async function POST(req: NextRequest) {
     return Response.json({ message: "No Flow" }, { status: 404 });
   }
 
-  const { answer, time } = await req.json();
+  const { taskId, answer, time } = await req.json();
 
   const user = await prisma.user.findUnique({
     where: {
@@ -62,10 +66,17 @@ export async function POST(req: NextRequest) {
     return Response.json({ message: "Invalid Flow" }, { status: 404 });
   }
 
+  // check if wrong answer
+  if (
+    tasks[taskId].prompt.replaceAll(" ", "") !==
+    answer.toLowerCase().replaceAll("-", "")
+  ) {
+    return Response.json({ message: "wrong" }, { status: 200 });
+  }
+
   await prisma.task.create({
     data: {
-      taskId: user.step,
-      correct: tasks[user.step].prompt === answer,
+      taskId,
       time,
       user: {
         connect: {
@@ -75,14 +86,20 @@ export async function POST(req: NextRequest) {
     },
   });
 
-  const updatedUser = await prisma.user.update({
-    where: {
-      id: flow,
-    },
-    data: {
-      step: user.step + 1,
-    },
-  });
+  const index = user.steps.indexOf(taskId);
+  const taskLeft = user.steps;
+  taskLeft.splice(index, 1);
+
+  if (index > -1) {
+    await prisma.user.update({
+      where: {
+        id: flow,
+      },
+      data: {
+        steps: taskLeft,
+      },
+    });
+  }
 
   return Response.json({ message: "ok" }, { status: 200 });
 }

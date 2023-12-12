@@ -7,8 +7,8 @@ CREATE TABLE "User" (
     "occupation" TEXT,
     "field" TEXT,
     "education" TEXT,
-    "usage" TEXT NOT NULL,
-    "workplace" TEXT NOT NULL,
+    "experience" TEXT NOT NULL,
+    "codeAtHome" TEXT NOT NULL,
     "step" INTEGER NOT NULL DEFAULT 0,
     "done" BOOLEAN NOT NULL DEFAULT false,
 

@@ -17,18 +17,13 @@ export default function Home() {
       <div className="grow flex flex-col items-center justify-center">
         <div className="flex flex-col justify-center px-8 lg:px-48 2xl:px-96">
           <h3 className="font-bold text-2xl mb-2">First, a few simple rules</h3>
-          <p className="flex-wrap text-md font-light border-y py-4">
-            Regole Regole Regole Regole Regole Regole Regole Regole Regole
-            Regole Regole Regole Regole Regole Regole Regole Regole Regole
-            Regole Regole Regole Regole Regole Regole Regole Regole Regole
-            Regole Regole Regole Regole Regole Regole Regole Regole Regole
-            Regole Regole Regole Regole Regole Regole Regole Regole Regole
-            Regole Regole Regole Regole Regole Regole Regole Regole Regole
-            Regole Regole Regole Regole Regole Regole Regole Regole Regole
-            Regole Regole Regole Regole Regole Regole Regole Regole Regole
-            Regole Regole Regole Regole Regole Regole Regole Regole Regole
-            Regole Regole Regole Regole
-          </p>
+          {/* <p className="flex-wrap text-md font-light border-y py-4"> */}
+          <div className="flex flex-col gap-2">
+            <span>1) Read carefully the word</span>
+            <span>2) Try to find the word between the options as fast as possible
+            </span>
+          </div>
+          {/* </p> */}
         </div>
         <Button className="mt-4" onClick={() => router.push("/demo")}>
           Got it!

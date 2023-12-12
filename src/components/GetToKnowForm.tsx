@@ -29,14 +29,14 @@ enum Occupation {
   Worker = "work",
 }
 
-enum Usage {
+enum Experience {
+  No = "no",
   Low = "low",
   Medium = "medium",
   High = "high",
-  VeryHigh = "very-uhigh",
 }
 
-enum UseAtWork {
+enum CodeAtHome {
   Yes = "true",
   No = "false",
 }
@@ -49,8 +49,8 @@ const formSchema = z.object({
   occupation: z.nativeEnum(Occupation, { required_error: "Mandatory" }),
   field: z.string().min(1, { message: "Mandatory" }),
   education: z.string().min(1, { message: "Mandatory" }),
-  usage: z.nativeEnum(Usage, { required_error: "Mandatory" }),
-  workplace: z.nativeEnum(UseAtWork, { required_error: "Mandatory" }),
+  experience: z.nativeEnum(Experience, { required_error: "Mandatory" }),
+  codeAtHome: z.nativeEnum(CodeAtHome, { required_error: "Mandatory" }),
 });
 
 export default function GetToKnowForm() {
@@ -63,8 +63,8 @@ export default function GetToKnowForm() {
       occupation: Occupation.Student,
       field: "",
       education: "",
-      usage: Usage.Low,
-      workplace: UseAtWork.Yes,
+      experience: Experience.Medium,
+      codeAtHome: CodeAtHome.Yes,
     },
   });
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -262,16 +262,16 @@ export default function GetToKnowForm() {
         <div className="flex flex-wrap gap-2">
           <FormField
             control={form.control}
-            name="usage"
+            name="experience"
             render={({ field }) => (
               <FormItem>
                 <FormControl>
                   <div className="flex items-center space-x-2">
                     <span className="whitespace-pre hidden lg:block">
-                      Throughout the day I use electronic devices
+                      I have coded for
                     </span>
                     <span className="whitespace-pre lg:hidden">
-                      Daily electronics usage:
+                      Coding experience:
                     </span>
                     <Select
                       onValueChange={field.onChange}
@@ -283,13 +283,13 @@ export default function GetToKnowForm() {
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        <SelectItem value={Usage.Low}>&lt; 1 hour</SelectItem>
-                        <SelectItem value={Usage.Medium}>
-                          1 - 3 hours
+                        <SelectItem value={Experience.No}>0 years</SelectItem>
+                        <SelectItem value={Experience.Low}>
+                          1 - 2 years
                         </SelectItem>
-                        <SelectItem value={Usage.High}>3 - 5 hours</SelectItem>
-                        <SelectItem value={Usage.VeryHigh}>
-                          &gt; 5 hours
+                        <SelectItem value={Experience.Medium}>2 - 4 years</SelectItem>
+                        <SelectItem value={Experience.High}>
+                          &gt; 4 years
                         </SelectItem>
                       </SelectContent>
                     </Select>
@@ -302,15 +302,15 @@ export default function GetToKnowForm() {
           />
           <FormField
             control={form.control}
-            name="workplace"
+            name="codeAtHome"
             render={({ field }) => (
               <FormItem>
                 <FormControl>
                   <div className="flex items-center space-x-2">
                     <span className="whitespace-pre hidden lg:block">
-                      I also
+                      and I
                     </span>
-                    <span className="whitespace-pre lg:hidden">Electronics usage at work</span>
+                    <span className="whitespace-pre lg:hidden">Code at work/school</span>
                     <Select
                       onValueChange={field.onChange}
                       defaultValue={field.value}
@@ -321,12 +321,12 @@ export default function GetToKnowForm() {
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        <SelectItem value={UseAtWork.Yes}>use</SelectItem>
-                        <SelectItem value={UseAtWork.No}>don&apos;t use</SelectItem>
+                        <SelectItem value={CodeAtHome.Yes}>code</SelectItem>
+                        <SelectItem value={CodeAtHome.No}>don&apos;t code</SelectItem>
                       </SelectContent>
                     </Select>
                     <span className="whitespace-pre hidden lg:block">
-                      them at my workplace.
+                      outside the workplace/school.
                     </span>
                   </div>
                 </FormControl>

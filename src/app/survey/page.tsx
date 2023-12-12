@@ -1,23 +1,30 @@
 "use client";
 
 import OptionKeyboard from "@/components/OptionKeyboard";
-import { type Task } from "@/lib/tasks";
 import axios from "axios";
 import { useRouter, useSearchParams } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import { useTimer } from "react-timer-hook";
 
+const COUNTDOWN = 2;
+
+type TaskRes = {
+  id: number;
+  prompt: string;
+  options: string[];
+};
+
 export default function SurveyPage() {
   const searchParams = useSearchParams();
   const router = useRouter();
 
-  const [task, setTask] = useState<Task>({ prompt: "", options: [] });
+  const [task, setTask] = useState<TaskRes>({ id: 0, prompt: "", options: [] });
   const [time, setTime] = useState<number>(0);
   const [start, setStart] = useState<boolean>(false);
   const [showOptions, setShowOptions] = useState<boolean>(false);
 
   const startTS = new Date();
-  startTS.setSeconds(startTS.getSeconds() + 3);
+  startTS.setSeconds(startTS.getSeconds() + COUNTDOWN);
 
   const countdown = useTimer({
     expiryTimestamp: startTS,
@@ -33,7 +40,7 @@ export default function SurveyPage() {
       }
       setTask(data.task);
       let nextTS = new Date();
-      nextTS.setSeconds(nextTS.getSeconds() + 3);
+      nextTS.setSeconds(nextTS.getSeconds() + COUNTDOWN);
       countdown.restart(nextTS, true);
     } catch (error) {
       console.log(error);
@@ -65,13 +72,15 @@ export default function SurveyPage() {
   }
 
   const recordTask = async (id: string) => {
-    setStart(false);
-    setShowOptions(false);
     try {
-      await axios.post(`/api/survey?flow=${flow}`, {
+      const { data } = await axios.post(`/api/survey?flow=${flow}`, {
+        taskId: task.id,
         answer: id,
         time,
       });
+      if (data.message === "wrong") return;
+      setStart(false);
+      setShowOptions(false);
       setTime(0);
       await getTask();
     } catch (error) {
