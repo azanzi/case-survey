@@ -162,7 +162,7 @@ export const tasks: Task[] = [
   },
   {
     prompt: "explore world",
-    options: ["exploreword", "explorerword", "exploreword", "exploresky"],
+    options: ["exploreworld", "explorerword", "exploreword", "exploresky"],
   },
   // no-sep 3 words
   {

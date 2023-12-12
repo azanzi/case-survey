@@ -7,6 +7,7 @@ interface OptionKeyboardPrompts {
   options: string[];
   isLoading: boolean;
   countdown: number;
+  wrong: string[];
   onOptClick: (id: string) => any;
 }
 
@@ -14,6 +15,7 @@ export default function OptionKeyboard({
   options,
   isLoading = false,
   countdown,
+  wrong,
   onOptClick,
 }: OptionKeyboardPrompts) {
   return (
@@ -21,6 +23,7 @@ export default function OptionKeyboard({
       {options.map((opt, i) => (
         <OptionCard
           onClick={() => onOptClick(opt)}
+          wrong={wrong.find(x => x === opt) ? true : false}
           key={i}
           value={opt}
           isLoading={isLoading}

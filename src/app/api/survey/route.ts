@@ -43,7 +43,7 @@ export async function GET(req: NextRequest) {
   const options = lodash.shuffle(task.options);
 
   return Response.json(
-    { task: { id: el, prompt: task.prompt, options } },
+    { task: { id: el, prompt: task.prompt, options }, progress: `${user.steps.length}/${tasks.length}` },
     { status: 200 }
   );
 }

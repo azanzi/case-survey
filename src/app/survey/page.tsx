@@ -19,9 +19,11 @@ export default function SurveyPage() {
   const router = useRouter();
 
   const [task, setTask] = useState<TaskRes>({ id: 0, prompt: "", options: [] });
+  const [progress, setProgress] = useState<string>("");
   const [time, setTime] = useState<number>(0);
   const [start, setStart] = useState<boolean>(false);
   const [showOptions, setShowOptions] = useState<boolean>(false);
+  const [wrongAnswers, setWrongAnswers] = useState<string[]>([]);
 
   const startTS = new Date();
   startTS.setSeconds(startTS.getSeconds() + COUNTDOWN);
@@ -39,6 +41,7 @@ export default function SurveyPage() {
         return router.push("/finished");
       }
       setTask(data.task);
+      setProgress(data.progress);
       let nextTS = new Date();
       nextTS.setSeconds(nextTS.getSeconds() + COUNTDOWN);
       countdown.restart(nextTS, true);
@@ -78,7 +81,10 @@ export default function SurveyPage() {
         answer: id,
         time,
       });
-      if (data.message === "wrong") return;
+      if (data.message === "wrong") {
+        setWrongAnswers((prev) => [id, ...prev]);
+        return;
+      }
       setStart(false);
       setShowOptions(false);
       setTime(0);
@@ -98,9 +104,11 @@ export default function SurveyPage() {
       <div className="flex flex-col items-center justify-center h-52 border-b border-slate-300 bg-slate-200">
         <p className="font-light text-lg">Click on the option you see</p>
         <h2 className="text-5xl font-bold">{task?.prompt || ""}</h2>
+        <span className="text-light mt-2">{progress}</span>
       </div>
       <OptionKeyboard
         options={task.options}
+        wrong={wrongAnswers}
         onOptClick={(id) => recordTask(id)}
         isLoading={!showOptions}
         countdown={countdown.seconds}

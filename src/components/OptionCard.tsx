@@ -6,6 +6,7 @@ import { cn } from "@/lib/utils";
 
 interface OptionCardPrompts {
   value: string;
+  wrong: boolean;
   isLoading: boolean;
   onClick: () => any;
 }
@@ -13,6 +14,7 @@ interface OptionCardPrompts {
 export default function OptionCard({
   value,
   isLoading = false,
+  wrong = false,
   onClick,
 }: OptionCardPrompts) {
   return (
@@ -21,7 +23,8 @@ export default function OptionCard({
       className={cn(
         isLoading
           ? "cursor-wait"
-          : "hover:cursor-pointer hover:bg-slate-200 hover:shadow-md",
+          : "hover:cursor-pointer hover:shadow-md",
+        wrong ? "bg-red-500 hover:cursor-not-allowed" : "hover:bg-slate-200",
         "flex items-center justify-center rounded-lg shadow-sm border  border-slate-300  duration-150"
       )}
     >
