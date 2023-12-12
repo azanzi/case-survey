@@ -19,11 +19,11 @@ export default function SurveyPage() {
   const router = useRouter();
 
   const [task, setTask] = useState<TaskRes>({ id: 0, prompt: "", options: [] });
+  const [startTime, setStartTime] = useState<number | undefined>(undefined);
   const [progress, setProgress] = useState<string>("");
-  const [time, setTime] = useState<number>(0);
-  const [start, setStart] = useState<boolean>(false);
   const [showOptions, setShowOptions] = useState<boolean>(false);
   const [wrongAnswers, setWrongAnswers] = useState<string[]>([]);
+
 
   const startTS = new Date();
   startTS.setSeconds(startTS.getSeconds() + COUNTDOWN);
@@ -55,39 +55,28 @@ export default function SurveyPage() {
     getTask();
   }, []);
 
-  // timer logic
-  useEffect(() => {
-    let interval: ReturnType<typeof setTimeout> | undefined = undefined;
-    if (start) {
-      interval = setInterval(() => {
-        setTime((prev) => prev + 10);
-      }, 10);
-    } else {
-      clearInterval(interval);
-    }
-
-    return () => clearInterval(interval);
-  }, [start]);
-
   const flow = searchParams.get("flow");
   if (!flow) {
     return router.push("/");
   }
 
   const recordTask = async (id: string) => {
+    if (!startTime) return;
+    const elapsedTime = Date.now() - startTime;
+
     try {
       const { data } = await axios.post(`/api/survey?flow=${flow}`, {
         taskId: task.id,
         answer: id,
-        time,
+        time: elapsedTime,
       });
       if (data.message === "wrong") {
         setWrongAnswers((prev) => [id, ...prev]);
         return;
       }
-      setStart(false);
+      // setStart(false);
       setShowOptions(false);
-      setTime(0);
+      // setTime(0);
       await getTask();
     } catch (error) {
       console.log(error);
@@ -95,8 +84,9 @@ export default function SurveyPage() {
   };
 
   const startTask = () => {
-    setStart(true);
+    setStartTime(Date.now());
     setShowOptions(true);
+    // setStart(true);
   };
 
   return (

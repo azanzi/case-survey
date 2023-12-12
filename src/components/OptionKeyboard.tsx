@@ -14,7 +14,7 @@ interface OptionKeyboardPrompts {
 export default function OptionKeyboard({
   options,
   isLoading = false,
-  countdown,
+  countdown = 2,
   wrong,
   onOptClick,
 }: OptionKeyboardPrompts) {
