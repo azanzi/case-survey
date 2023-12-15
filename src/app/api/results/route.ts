@@ -4,10 +4,7 @@ import { createObjectCsvStringifier } from "csv-writer";
 
 const prisma = new PrismaClient();
 
-interface Result {
-  id: string;
-  tasks: {}[];
-}
+export const fetchCache = 'force-no-store';
 
 function parseObject(input: { tasks: { time: number }[] }) {
   const resultObject: { tasks: { time: number }[] } = { ...input };
@@ -103,7 +100,6 @@ export async function GET(req: NextRequest) {
   }
 
   const headers = new Headers();
-
   const csvString = csv.getHeaderString() + csv.stringifyRecords(parsedResults);
 
   headers.append("Content-Disposition", "attachment; filename=results.csv");
