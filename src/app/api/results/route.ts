@@ -1,16 +1,23 @@
 import { PrismaClient } from "@prisma/client";
 import { NextRequest } from "next/server";
-import { createObjectCsvStringifier, createObjectCsvWriter } from "csv-writer";
+import { createObjectCsvWriter } from "csv-writer";
 import { readFile } from "fs/promises";
 import path from "path";
 
 const prisma = new PrismaClient();
 
-function parseObject(input) {
-  const resultObject = { ...input };
+interface Result {
+  id: string;
+  tasks: {}[];
+}
+
+function parseObject(input: { tasks: { time: number }[] }) {
+  const resultObject: { tasks: { time: number }[] } = { ...input };
+  // @ts-ignore
   delete resultObject.tasks;
 
   input.tasks.forEach((task, index) => {
+  // @ts-ignore
     resultObject[`t${index + 1}`] = task.time;
   });
 
