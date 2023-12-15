@@ -1,8 +1,6 @@
 import { PrismaClient } from "@prisma/client";
 import { NextRequest } from "next/server";
-import { createObjectCsvWriter } from "csv-writer";
-import { readFile } from "fs/promises";
-import path from "path";
+import { createObjectCsvStringifier } from "csv-writer";
 
 const prisma = new PrismaClient();
 
@@ -17,7 +15,7 @@ function parseObject(input: { tasks: { time: number }[] }) {
   delete resultObject.tasks;
 
   input.tasks.forEach((task, index) => {
-  // @ts-ignore
+    // @ts-ignore
     resultObject[`t${index + 1}`] = task.time;
   });
 
@@ -56,8 +54,7 @@ export async function GET(req: NextRequest) {
   });
 
   // get csv
-  const csv = createObjectCsvWriter({
-    path: "./results.csv",
+  const csv = createObjectCsvStringifier({
     header: [
       { id: "id", title: "ID" },
       { id: "age", title: "AGE" },
@@ -105,14 +102,16 @@ export async function GET(req: NextRequest) {
     parsedResults.push(parseObject(entry));
   }
 
-  await csv.writeRecords(parsedResults);
-
   const headers = new Headers();
 
-  headers.append("Content-Disposition", "attachment; filename=results.csv");
-  headers.append("Content-Type", "application/text");
-  console.log(process.cwd());
-  const buffer = await readFile(path.join(process.cwd(), "results.csv"));
+  const csvString = csv.getHeaderString() + csv.stringifyRecords(parsedResults);
 
-  return new Response(buffer, { headers });
+  headers.append("Content-Disposition", "attachment; filename=results.csv");
+  headers.append("Content-Type", "text/csv");
+  headers.append(
+    "Cache-Control",
+    "no-store, no-cache, must-revalidate, max-age=0"
+  );
+
+  return new Response(csvString, { headers });
 }
