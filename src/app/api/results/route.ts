@@ -45,7 +45,7 @@ export async function GET(req: NextRequest) {
     where: {
       done: true,
       age: {
-        lt: 99,
+        lt: 89,
       },
     },
   });
